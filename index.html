@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js">
+    </script>
+    <script type="text/javascript">
+      function initialize() {
+        var mapOptions = {
+          center: { lat: -34.397, lng: 150.644},
+          zoom: 8
+        };
+        var map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- full screen map -->
+    <div id="map-canvas"></div>
+
+    <!-- arrow button on moblie devices to reveal menu -->
+    <div class="menu-button visible-xs">
+        <span class="glyphicon glyphicon-menu-left"></span>
+    </div>
+
+    <!-- menu with list of places and search form -->
+    <!-- offscreen on mobile devices -->
+    <div class="container ">
+        <div class="row">
+            <div class="right-panel" id="right-nav">
+                <ul class="nav nav-stacked">
+                    <li>
+                        <form class="navbar-form" role="search">
+                            <div class="form-group search-group">
+                                <input type="text" class="form-control search-input" placeholder="Search"><button type="submit" class="btn btn-default search-btn"><span class="glyphicon glyphicon-search"></span></button>
+                            </div>
+                        </form>
+                    </li>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="js/libs/jquery.min.js"></script>
+    <script src="js/libs/bootstrap.min.js"></script>
+    <script src="js/offcanvas.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -6,20 +6,7 @@
     <title></title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-    <script type="text/javascript"
-        src="https://maps.googleapis.com/maps/api/js">
-    </script>
-    <script type="text/javascript">
-      function initialize() {
-        var mapOptions = {
-          center: { lat: -34.397, lng: 150.644},
-          zoom: 8
-        };
-        var map = new google.maps.Map(document.getElementById('map-canvas'),
-            mapOptions);
-      }
-      google.maps.event.addDomListener(window, 'load', initialize);
-    </script>
+
 </head>
 <body>
 <div class="wrap">
@@ -45,10 +32,9 @@
                             </div>
                         </form>
                     </li>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Home</a></li>
+                    <!-- ko foreach: initialLocations -->
+                        <li><a data-bind="text: name" href="#"></a></li>
+                    <!-- /ko -->
                 </ul>
             </div>
         </div>
@@ -56,7 +42,8 @@
 </div>
     <script src="js/libs/jquery.min.js"></script>
     <script src="js/libs/bootstrap.min.js"></script>
+    <script src="js/libs/knockout-3.3.0.js"></script>
     <script src="js/offcanvas.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

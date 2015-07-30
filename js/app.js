@@ -1,3 +1,5 @@
+//Model
+//array with locations
 var initialLocations = [
     {
         name: 'Caulfield Park',
@@ -19,6 +21,7 @@ var initialLocations = [
     }
 ];
 
+//load google maps script after window loads
 var loadMapAPI = function() {
     var script = document.createElement('script');
     script.type = 'text/javascript';
@@ -29,6 +32,7 @@ var loadMapAPI = function() {
     document.body.appendChild(script);
 };
 
+//Initialize Map after google maps script loads
 var initializeMap = function() {
 
     //lat lng

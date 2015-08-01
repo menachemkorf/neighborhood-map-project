@@ -32,8 +32,8 @@
                             </div>
                         </form>
                     </li>
-                    <!-- ko foreach: initialLocations -->
-                        <li><a data-bind="text: name" href="#"></a></li>
+                    <!-- ko foreach: locationsAll -->
+                        <li><a data-bind="text: name, click: setCurrentLocation" href="#"></a></li>
                     <!-- /ko -->
                 </ul>
             </div>

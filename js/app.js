@@ -1,25 +1,4 @@
-//Model
-//array with locations
-var initialLocations = [
-    {
-        name: 'Caulfield Park',
-        address: 'Caulfield North VIC 3161',
-        lat: -37.872625,
-        lng: 145.031354
-    },
-    {
-        name: 'Greenmeadows Gardens',
-        address: 'St Kilda East VIC 3183',
-        lat: -37.872972,
-        lng: 145.003894
-    },
-    {
-        name: 'Royal Botanic Gardens',
-        address: 'South Yarra VIC 3141',
-        lat: -37.829695,
-        lng: 144.982472
-    }
-];
+var map;
 
 //load google maps script after window loads
 var loadMapAPI = function() {
@@ -46,8 +25,130 @@ var initializeMap = function() {
 
     //creating the map object
     //two param: DOM element, options object
-    var map = new google.maps.Map(document.getElementById('map-canvas'),
+    map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
+
+    //info window
+        map.infoWindow = new google.maps.InfoWindow({
+            content: 'hello world'
+        });
+
+    ko.applyBindings(ViewModel);
 };
 
 $(window).load(loadMapAPI);
+
+
+
+
+
+//Model
+//array with locations
+var initialLocations = [
+    {
+        name: 'Caulfield Park',
+        address: 'Caulfield North VIC 3161',
+        lat: -37.872625,
+        lng: 145.031354
+    },
+    {
+        name: 'Greenmeadows Gardens',
+        address: 'St Kilda East VIC 3183',
+        lat: -37.872972,
+        lng: 145.003894
+    },
+    {
+        name: 'Royal Botanic Gardens',
+        address: 'South Yarra VIC 3141',
+        lat: -37.829695,
+        lng: 144.982472
+    }
+];
+
+var Locations = function(data) {
+    this.name = ko.observable(data.name);
+    this.address = ko.observable(data.address);
+    this.lat = ko.observable(data.lat);
+    this.lng = ko.observable(data.lng);
+};
+
+var addMarker = function(data) {
+
+    //var selectedLocation = null;
+    //for (var i = 0; i < data.length; i++) {
+        data.marker = new google.maps.Marker({
+            position: {
+                lat: data.lat(),
+                lng: data.lng()
+            },
+            map: map,
+            title: data.name()
+        });
+        //google.maps.event.addListener(marker, 'click', function() {
+        //    selectedLocation = this;
+        //    console.log(selectedLocation);
+        //});
+    //}
+
+
+};
+
+var initInfoWindow = function() {
+        //info window
+        var contentStr = '<div>This is my home</div>';
+        var infoWindow = new google.maps.InfoWindow({
+            content: contentStr
+        });
+        /*google.maps.event.addListener(marker, 'click', function() {
+            console.log(this);
+            //infoWindow.open(map, marker);
+        });*/
+
+}
+
+var ViewModel = function() {
+    var self = this;
+
+    //holds all locations in onservable array
+    self.locationsAll = ko.observableArray([]);
+    self.selectedLocation = ko.observable(null);
+
+    //populate locationsAll array with initialLocations
+    initialLocations.forEach(function(location) {
+        self.locationsAll.push(new Locations(location));
+    });
+
+    //add markers to each location
+    locationsAll().forEach(function(location) {
+        addMarker(location);
+    });
+
+    //add click event listeners to markers
+    locationsAll().forEach(function(location) {
+        google.maps.event.addListener(location.marker, 'click', function() {
+            setCurrentLocation(location);
+        });
+    });
+
+    //sets selectedLocation when click on list item or marker
+    self.setCurrentLocation = function(location) {
+
+        // clear previous marker animations
+        if(selectedLocation() !== null && selectedLocation() !== location) {
+            selectedLocation().marker.setAnimation(null);
+        }
+
+        selectedLocation(location);
+        selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
+        //infoWindow.open(map, marker);
+        //map.infoWindow.open(map, selectedLocation().marker);
+
+        //selectedLocation().marker.setIcon('http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
+
+
+        };
+
+};
+
+//ko.applyBindings(ViewModel);
+

@@ -78,6 +78,7 @@ var initialLocations = [
         address: 'Carlton VIC',
         lat: -37.803421,
         lng: 144.972905
+
     }
 ];
 
@@ -89,38 +90,22 @@ var Locations = function(data) {
 };
 
 var addMarker = function(data) {
-
-    //var selectedLocation = null;
-    //for (var i = 0; i < data.length; i++) {
-        data.marker = new google.maps.Marker({
-            position: {
-                lat: data.lat(),
-                lng: data.lng()
-            },
-            map: map,
-            title: data.name()
-        });
-        //google.maps.event.addListener(marker, 'click', function() {
-        //    selectedLocation = this;
-        //    console.log(selectedLocation);
-        //});
-    //}
-
-
+    data.marker = new google.maps.Marker({
+        position: {
+            lat: data.lat(),
+            lng: data.lng()
+        },
+        map: map,
+        title: data.name()
+    });
 };
 
-var initInfoWindow = function() {
-        //info window
-        var contentStr = '<div>This is my home</div>';
-        var infoWindow = new google.maps.InfoWindow({
-            content: contentStr
-        });
-        /*google.maps.event.addListener(marker, 'click', function() {
-            console.log(this);
-            //infoWindow.open(map, marker);
-        });*/
-
-}
+var customInfoWindow = function(data) {
+    //info window
+    console.log(data);
+        console.log(map.infoWindowContentStr);
+        $('.wiki-content').append('hello');
+};
 
 var ViewModel = function() {
     var self = this;
@@ -157,12 +142,10 @@ var ViewModel = function() {
         selectedLocation(location);
         selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
         //infoWindow.open(map, marker);
+
         map.infoWindow.open(map, selectedLocation().marker);
-
-        //selectedLocation().marker.setIcon('http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
-
-
-        };
+        customInfoWindow(selectedLocation());
+    };
 
 };
 

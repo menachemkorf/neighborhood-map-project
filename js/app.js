@@ -29,8 +29,12 @@ var initializeMap = function() {
         mapOptions);
 
     //info window
+        map.infoWindowContentStr = '<div class="info-window">' +
+            '<div class="wiki-container"><h4>Wikipedia</h4><div class="wiki-content">wikipedia articles...</div></div>' +
+            '</div>';
+
         map.infoWindow = new google.maps.InfoWindow({
-            content: 'hello world'
+            content: map.infoWindowContentStr
         });
 
     ko.applyBindings(ViewModel);
@@ -46,22 +50,34 @@ $(window).load(loadMapAPI);
 //array with locations
 var initialLocations = [
     {
-        name: 'Caulfield Park',
-        address: 'Caulfield North VIC 3161',
-        lat: -37.872625,
-        lng: 145.031354
+        name: 'Melbourne Zoo',
+        address: 'Capital City Trail',
+        lat: -37.780870,
+        lng: 144.951499
     },
     {
-        name: 'Greenmeadows Gardens',
-        address: 'St Kilda East VIC 3183',
-        lat: -37.872972,
-        lng: 145.003894
+        name: 'Melbourne Aquarium',
+        address: 'Melbourne VIC',
+        lat: -37.820894,
+        lng: 144.958240
     },
     {
-        name: 'Royal Botanic Gardens',
+        name: 'Melbourne Royal Botanic Gardens',
         address: 'South Yarra VIC 3141',
         lat: -37.829695,
         lng: 144.982472
+    },
+    {
+        name: 'Melbourne Luna Park',
+        address: '14 Lower Esplanade St Kilda VIC 3182',
+        lat: -37.867404,
+        lng: 144.976872
+    },
+    {
+        name: 'Melbourne Museum',
+        address: 'Carlton VIC',
+        lat: -37.803421,
+        lng: 144.972905
     }
 ];
 
@@ -141,7 +157,7 @@ var ViewModel = function() {
         selectedLocation(location);
         selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
         //infoWindow.open(map, marker);
-        //map.infoWindow.open(map, selectedLocation().marker);
+        map.infoWindow.open(map, selectedLocation().marker);
 
         //selectedLocation().marker.setIcon('http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
 

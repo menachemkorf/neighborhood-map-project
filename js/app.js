@@ -174,8 +174,8 @@ var ViewModel = function() {
     //populate locationsAll array with initialLocations
     model.initialLocations.forEach(function(location) {
         //console.log(locationsAll());
-        this.locationsAll.push(new Locations(location)) ;
-    });
+        this.locationsAll.push(new Locations(location));
+    }, this);
 
     //add markers to each location
     this.locationsAll().forEach(function(location) {
@@ -193,7 +193,7 @@ var ViewModel = function() {
     this.setCurrentLocation = function (location) {
 
         // clear previous marker animations
-        if(self.selectedLocation() !== null && this.selectedLocation() !== location) {
+        if(self.selectedLocation() !== null && self.selectedLocation() !== location) {
             self.selectedLocation().marker.setAnimation(null);
         }
 

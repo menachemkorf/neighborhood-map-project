@@ -1,4 +1,5 @@
 var map;
+var infoWindow;
 
 //load google maps script after window loads
 var loadMapAPI = function() {
@@ -12,7 +13,7 @@ var loadMapAPI = function() {
 };
 
 //Initialize Map after google maps script loads
-var initializeMap = function() {
+function initializeMap () {
 
     //lat lng
     var myLatlng = new google.maps.LatLng(-37.868775, 145.017224);
@@ -28,71 +29,86 @@ var initializeMap = function() {
     map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
 
-    //info window
-        map.infoWindowContentStr = '<div class="info-window">' +
-                                        '<h4 class="name-header"></h4>' +
-                                        '<div class="wiki-container">' +
-                                        '<h5 class="wiki-header">Wikipedia</h5>' +
-                                        '<div class="wiki-content">wikipedia articles...</div>' +
-                                        '</div>' +
-                                    '</div>';
-
-        map.infoWindow = new google.maps.InfoWindow({
-            content: map.infoWindowContentStr
-        });
+    initializeInfoWindow();
 
     ko.applyBindings(ViewModel);
-};
+}
+
+function initializeInfoWindow() {
+    var infoWindowContentStr = '<div class="info-window">' +
+                                    '<h4 class="name-header"></h4>' +
+                                    '<div class="wiki-container">' +
+                                    '<h5 class="wiki-header">Wikipedia</h5>' +
+                                    '<div class="wiki-content"></div>' +
+                                    '</div>' +
+                                '</div>';
+
+    infoWindow = new google.maps.InfoWindow({
+        content: infoWindowContentStr
+    });
+}
 
 $(window).load(loadMapAPI);
 
-
 //Model
 //array with locations
-var initialLocations = [
-    {
-        name: 'Melbourne Zoo',
-        address: 'Capital City Trail',
-        wiki: 'Melbourne%20Zoo',
-        lat: -37.780870,
-        lng: 144.951499
-    },
-    {
-        name: 'Sea Life Melbourne Aquarium',
-        address: 'Melbourne VIC',
-        wiki: 'Sea%20Life%20Melbourne%20Aquarium',
-        lat: -37.820894,
-        lng: 144.958240
-    },
-    {
-        name: 'Melbourne Royal Botanic Gardens',
-        address: 'South Yarra VIC 3141',
-        wiki: 'Royal%20Botanic%20Gardens,%20Melbourne',
-        lat: -37.829695,
-        lng: 144.982472
-    },
-    {
-        name: 'Melbourne Luna Park',
-        address: '14 Lower Esplanade St Kilda VIC 3182',
-        wiki: 'Luna%20Park,%20Melbourne',
-        lat: -37.867404,
-        lng: 144.976872
-    },
-    {
-        name: 'Melbourne Museum',
-        address: 'Carlton VIC',
-        wiki: 'Melbourne',
-        //wiki: 'Melbourne%20Museum',
-        lat: -37.803421,
-        lng: 144.972905
+var model = {
+    initialLocations : [
+        {
+            title: 'Melbourne Zoo',
+            address: 'Capital City Trail',
+            wikiSearch: 'Melbourne%20Zoo',
+            lat: -37.780870,
+            lng: 144.951499
+        },
+        {
+            title: 'Sea Life Melbourne Aquarium',
+            address: 'Melbourne VIC',
+            wikiSearch: 'Sea%20Life%20Melbourne%20Aquarium',
+            lat: -37.820894,
+            lng: 144.958240
+        },
+        {
+            title: 'Melbourne Royal Botanic Gardens',
+            address: 'South Yarra VIC 3141',
+            wikiSearch: 'Royal%20Botanic%20Gardens,%20Melbourne',
+            lat: -37.829695,
+            lng: 144.982472
+        },
+        {
+            title: 'Melbourne Luna Park',
+            address: '14 Lower Esplanade St Kilda VIC 3182',
+            wikiSearch: 'Luna%20Park,%20Melbourne',
+            lat: -37.867404,
+            lng: 144.976872
+        },
+        {
+            title: 'Melbourne Museum',
+            address: 'Carlton VIC',
+            wikiSearch: 'Melbourne%20Museum',
+            lat: -37.803421,
+            lng: 144.972905
 
+        }
+    ],
+    wikiAPI: {
+        isLoaded: ko.observable(""),
+        urlTemp: ko.observable("http://en.wikipedia.org/w/api.php?action=opensearch&search=" + "data" + "&limit=1&format=json"),
+        title: ko.observable(""),
+        description: ko.observable(""),
+        link: ko.observable(""),
+        parseResponse: function(response) {
+            model.wikiAPI.title(response[1][0]);
+            model.wikiAPI.description(response[2][0]);
+            model.wikiAPI.link(response[3][0]);
+        }
     }
-];
+};
 
 var Locations = function(data) {
-    this.name = ko.observable(data.name);
+    this.title = ko.observable(data.title);
     this.address = ko.observable(data.address);
-    this.wiki = ko.observable(data.wiki);
+    this.wikiSearch = ko.observable(data.wikiSearch);
     this.lat = ko.observable(data.lat);
     this.lng = ko.observable(data.lng);
 };
@@ -104,60 +120,44 @@ var addMarker = function(data) {
             lng: data.lng()
         },
         map: map,
-        title: data.name()
+        title: data.title()
     });
 };
 
 var customInfoWindowHeader = function(data) {
     //info window
-    console.log(data);
-    //console.log(map.infoWindowContentStr);
-    var str = data.name();
+    var str = data.title();
     $('.name-header').text(str);
 };
 
 var loadWikiAPI = function(data) {
-    //wikipedia ajax request
-    //var wikipediaUrl = 'http://en.wikipedia.org/w/api.php?action=query&titles='+data+'&prop=extracts&exintro=&explaintext&format=json';
 
-    //query url
-    //var wikipediaUrl = 'http://en.wikipedia.org/w/api.php?action=query&prop=revisions&titles='+data+'&rvprop=content&rvsection=0&rvparse&format=json';
-
-    //search url with extracts
-    //var wikipediaUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='+data+'&prop=extracts&exintro=&explaintext&format=json';
-
-    //search url without extracts
-    //var wikipediaUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='+data+'&format=json';
-
-    //search url without extracts limit 1
-    var wikipediaUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='+data+'&limit=1&format=json';
-
-
-    console.log(wikipediaUrl);
-    //console.log(data);
+    var u = model.wikiAPI.urlTemp().replace('data', data);
 
     //error handling
     var wikiRequestTimeout = setTimeout(function(){
-        return null;
+        model.wikiAPI.isLoaded("error");
     }, 8000);
 
     $.ajax({
-        url: wikipediaUrl,
+        url: u,
         dataType: "jsonp",
         success: function(response) {
-            console.log(response);
+            //console.log(response);
             //return response;
 
-            var parsedResponse = {};
-            parsedResponse.name = response[1][0];
-            parsedResponse.description = response[2][0];
-            parsedResponse.url = response[3][0];
 
-            console.log(parsedResponse);
-            //return parsedResponse;
-            $('.wiki-content').html('<p>' + parsedResponse.description + '<br>' +
-                    '<a href="' + parsedResponse.url + '">Read more</a>' +
-                    '</p>');
+            if (response[1][0]) {
+                model.wikiAPI.isLoaded("success");
+                model.wikiAPI.parseResponse(response);
+            } else {
+                model.wikiAPI.isLoaded("error");
+            }
+
+            //console.log(model.wikiAPI);
+            /*$('.wiki-content').html('<p>' + model.wikiAPI.description() + '<br>' +
+                    '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
+                    '</p>');*/
             clearTimeout(wikiRequestTimeout);
         }
     });
@@ -167,56 +167,77 @@ var ViewModel = function() {
     var self = this;
 
     //holds all locations in onservable array
-    self.locationsAll = ko.observableArray([]);
-    self.selectedLocation = ko.observable(null);
+    this.locationsAll = ko.observableArray([]);
+    this.selectedLocation = ko.observable(null);
+    //var selectedLocation = model.selectedLocation;
 
     //populate locationsAll array with initialLocations
-    initialLocations.forEach(function(location) {
-        self.locationsAll.push(new Locations(location));
+    model.initialLocations.forEach(function(location) {
+        //console.log(locationsAll());
+        this.locationsAll.push(new Locations(location)) ;
     });
 
     //add markers to each location
-    locationsAll().forEach(function(location) {
+    this.locationsAll().forEach(function(location) {
         addMarker(location);
     });
 
     //add click event listeners to markers
     locationsAll().forEach(function(location) {
         google.maps.event.addListener(location.marker, 'click', function() {
-            setCurrentLocation(location);
+            self.setCurrentLocation(location);
         });
     });
 
     //sets selectedLocation when click on list item or marker
-    self.setCurrentLocation = function(location) {
+    this.setCurrentLocation = function (location) {
 
         // clear previous marker animations
-        if(selectedLocation() !== null && selectedLocation() !== location) {
-            selectedLocation().marker.setAnimation(null);
+        if(self.selectedLocation() !== null && this.selectedLocation() !== location) {
+            self.selectedLocation().marker.setAnimation(null);
         }
 
-        selectedLocation(location);
-        selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
+        self.selectedLocation(location);
+        self.selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
 
-        map.infoWindow.open(map, selectedLocation().marker);
+
+        infoWindow.open(map, selectedLocation().marker);
         customInfoWindowHeader(selectedLocation());
 
-        console.log(selectedLocation());
+        loadWikiAPI(selectedLocation().wikiSearch());
 
-            var a = loadWikiAPI(selectedLocation().wiki());
+        //self.loaded();
+    } //end setCurrentLocation
 
+    loaded = ko.computed(function(){
 
+        //if ($(".wiki-content").length > 0) {
 
-        /******
-        * TODO promise
-        *
-        *******/
+            if (!model.wikiAPI.isLoaded()) {
 
+                $('.wiki-content').html('<p>' + 'loading...' + '</p>');
+                //return '<p>' + 'loading...' + '</p>';
 
-        //console.log(selectedLocation().wiki);
-    };
+            } else if (model.wikiAPI.isLoaded() === 'success') {
+
+                $('.wiki-content').html('<p>' + model.wikiAPI.description() + '<br>' +
+                    '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
+                    '</p>');
+
+                /*return '<p>' + model.wikiAPI.description() + '<br>' +
+                    '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
+                    '</p>';*/
+
+            } else if (model.wikiAPI.isLoaded() === 'error') {
+                $('.wiki-content').html('<p>' + 'There was an error loading wikipedia.' + '</p>');
+                //return '<p>' + 'There was an error loading wikipedia.' + '</p>';
+            }
+        //}
+//console.log($(".wiki-content").length);
+
+    });
+
+console.log(this.locationsAll()[0].title());
+    //console.log(self);
 
 };
-
-//ko.applyBindings(ViewModel);
-

@@ -124,11 +124,11 @@ var addMarker = function(data) {
     });
 };
 
-var customInfoWindowHeader = function(data) {
+/*var customInfoWindowHeader = function(data) {
     //info window
     var str = data.title();
     $('.name-header').text(str);
-};
+};*/
 
 var loadWikiAPI = function(data) {
 
@@ -139,25 +139,19 @@ var loadWikiAPI = function(data) {
         model.wikiAPI.isLoaded("error");
     }, 8000);
 
+    //clear previous request
+    model.wikiAPI.isLoaded("");
+
     $.ajax({
         url: u,
         dataType: "jsonp",
         success: function(response) {
-            //console.log(response);
-            //return response;
-
-
             if (response[1][0]) {
                 model.wikiAPI.isLoaded("success");
                 model.wikiAPI.parseResponse(response);
             } else {
                 model.wikiAPI.isLoaded("error");
             }
-
-            //console.log(model.wikiAPI);
-            /*$('.wiki-content').html('<p>' + model.wikiAPI.description() + '<br>' +
-                    '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
-                    '</p>');*/
             clearTimeout(wikiRequestTimeout);
         }
     });
@@ -192,11 +186,6 @@ var ViewModel = function() {
 
     //sets selectedLocation when click on list item or marker
     self.setCurrentLocation = function (location) {
-
-        // clear previous marker animations
-        /*if(self.selectedLocation() !== null) {
-            self.selectedLocation().marker.setAnimation(null);
-        }*/
         self.previousLocation = self.selectedLocation();
         self.selectedLocation(location);
     };
@@ -204,35 +193,52 @@ var ViewModel = function() {
     //handle current location when changed
     self.handleCurrentLocation = ko.computed(function() {
 
+        //check if selectedLocation was set
         if(self.selectedLocation() !== null) {
 
-            if (self.previousLocation !== null){
-                self.previousLocation.marker.setAnimation(null);
+            //check if selectedLocation was changed
+            if (self.selectedLocation() !== self.previousLocation) {
+
+                if (self.previousLocation !== null) {
+                    //stop animation from previous marker
+                    self.previousLocation.marker.setAnimation(null);
+                }
+                //animate marker on selectedLocation
+                self.selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
+
+                //open infowindow with default html
+                infoWindow.open(map, self.selectedLocation().marker);
+
+                //put ajax request to wikipedia api for selected location info
+                loadWikiAPI(self.selectedLocation().wikiSearch());
             }
 
-            //apply marker
-            self.selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
-
-            //open infowindow with header as location title
-            infoWindow.open(map, self.selectedLocation().marker);
-            customInfoWindowHeader(self.selectedLocation());
-
-            //put ajax request to wikipedia api for selected location info
-            loadWikiAPI(self.selectedLocation().wikiSearch());
         }
     });
 
     //add content to infowindow from wikipedia api
     self.loaded = ko.computed(function(){
+
+        //append title to infowindow header
+        if(self.selectedLocation() !== null) {
+            var str = self.selectedLocation().title();
+            $('.name-header').text(str);
+        }
+
         //if api not yet loaded
+        //append loading message to infoindow
         if (!model.wikiAPI.isLoaded()) {
             $('.wiki-content').html('<p>' + 'loading...' + '</p>');
+
         //if api loaded successfully
+        //append parsed response to infowindow
         } else if (model.wikiAPI.isLoaded() === 'success') {
             $('.wiki-content').html('<p>' + model.wikiAPI.description() + '<br>' +
                 '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
                 '</p>');
+
         //if error loding
+        //append error message to infowindow
         } else if (model.wikiAPI.isLoaded() === 'error') {
             $('.wiki-content').html('<p>' + 'There was an error loading wikipedia.' + '</p>');
         }

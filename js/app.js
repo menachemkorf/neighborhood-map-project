@@ -169,6 +169,7 @@ var ViewModel = function() {
     //holds all locations in onservable array
     self.locationsAll = ko.observableArray([]);
     self.selectedLocation = ko.observable(null);
+    //self.previousLocation = self.selectedLocation();
     //var selectedLocation = model.selectedLocation;
 
     //populate locationsAll array with initialLocations
@@ -191,14 +192,23 @@ var ViewModel = function() {
 
     //sets selectedLocation when click on list item or marker
     self.setCurrentLocation = function (location) {
+
+        // clear previous marker animations
+        /*if(self.selectedLocation() !== null) {
+            self.selectedLocation().marker.setAnimation(null);
+        }*/
+        self.previousLocation = self.selectedLocation();
         self.selectedLocation(location);
     };
 
     //handle current location when changed
     self.handleCurrentLocation = ko.computed(function() {
+
         if(self.selectedLocation() !== null) {
-            // clear previous marker animations
-            self.selectedLocation().marker.setAnimation(null);
+
+            if (self.previousLocation !== null){
+                self.previousLocation.marker.setAnimation(null);
+            }
 
             //apply marker
             self.selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -227,8 +237,4 @@ var ViewModel = function() {
             $('.wiki-content').html('<p>' + 'There was an error loading wikipedia.' + '</p>');
         }
     });
-
-//console.log(self.locationsAll()[0].title());
-  console.log(self);
-
 };

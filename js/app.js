@@ -31,7 +31,7 @@ function initializeMap () {
 
     initializeInfoWindow();
 
-    ko.applyBindings(ViewModel);
+    ko.applyBindings(new ViewModel());
 }
 
 function initializeInfoWindow() {
@@ -167,77 +167,68 @@ var ViewModel = function() {
     var self = this;
 
     //holds all locations in onservable array
-    this.locationsAll = ko.observableArray([]);
-    this.selectedLocation = ko.observable(null);
+    self.locationsAll = ko.observableArray([]);
+    self.selectedLocation = ko.observable(null);
     //var selectedLocation = model.selectedLocation;
 
     //populate locationsAll array with initialLocations
     model.initialLocations.forEach(function(location) {
         //console.log(locationsAll());
-        this.locationsAll.push(new Locations(location));
-    }, this);
+        self.locationsAll.push(new Locations(location));
+    });
 
     //add markers to each location
-    this.locationsAll().forEach(function(location) {
+    self.locationsAll().forEach(function(location) {
         addMarker(location);
     });
 
     //add click event listeners to markers
-    locationsAll().forEach(function(location) {
+    self.locationsAll().forEach(function(location) {
         google.maps.event.addListener(location.marker, 'click', function() {
             self.setCurrentLocation(location);
         });
     });
 
     //sets selectedLocation when click on list item or marker
-    this.setCurrentLocation = function (location) {
-
-        // clear previous marker animations
-        if(self.selectedLocation() !== null && self.selectedLocation() !== location) {
-            self.selectedLocation().marker.setAnimation(null);
-        }
-
+    self.setCurrentLocation = function (location) {
         self.selectedLocation(location);
-        self.selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
+    };
 
+    //handle current location when changed
+    self.handleCurrentLocation = ko.computed(function() {
+        if(self.selectedLocation() !== null) {
+            // clear previous marker animations
+            self.selectedLocation().marker.setAnimation(null);
 
-        infoWindow.open(map, selectedLocation().marker);
-        customInfoWindowHeader(selectedLocation());
+            //apply marker
+            self.selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
 
-        loadWikiAPI(selectedLocation().wikiSearch());
+            //open infowindow with header as location title
+            infoWindow.open(map, self.selectedLocation().marker);
+            customInfoWindowHeader(self.selectedLocation());
 
-        //self.loaded();
-    } //end setCurrentLocation
-
-    loaded = ko.computed(function(){
-
-        //if ($(".wiki-content").length > 0) {
-
-            if (!model.wikiAPI.isLoaded()) {
-
-                $('.wiki-content').html('<p>' + 'loading...' + '</p>');
-                //return '<p>' + 'loading...' + '</p>';
-
-            } else if (model.wikiAPI.isLoaded() === 'success') {
-
-                $('.wiki-content').html('<p>' + model.wikiAPI.description() + '<br>' +
-                    '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
-                    '</p>');
-
-                /*return '<p>' + model.wikiAPI.description() + '<br>' +
-                    '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
-                    '</p>';*/
-
-            } else if (model.wikiAPI.isLoaded() === 'error') {
-                $('.wiki-content').html('<p>' + 'There was an error loading wikipedia.' + '</p>');
-                //return '<p>' + 'There was an error loading wikipedia.' + '</p>';
-            }
-        //}
-//console.log($(".wiki-content").length);
-
+            //put ajax request to wikipedia api for selected location info
+            loadWikiAPI(self.selectedLocation().wikiSearch());
+        }
     });
 
-console.log(this.locationsAll()[0].title());
-    //console.log(self);
+    //add content to infowindow from wikipedia api
+    self.loaded = ko.computed(function(){
+        //if api not yet loaded
+        if (!model.wikiAPI.isLoaded()) {
+            $('.wiki-content').html('<p>' + 'loading...' + '</p>');
+        //if api loaded successfully
+        } else if (model.wikiAPI.isLoaded() === 'success') {
+            $('.wiki-content').html('<p>' + model.wikiAPI.description() + '<br>' +
+                '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
+                '</p>');
+        //if error loding
+        } else if (model.wikiAPI.isLoaded() === 'error') {
+            $('.wiki-content').html('<p>' + 'There was an error loading wikipedia.' + '</p>');
+        }
+    });
+
+//console.log(self.locationsAll()[0].title());
+  console.log(self);
 
 };

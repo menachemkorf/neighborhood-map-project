@@ -163,12 +163,9 @@ var ViewModel = function() {
     //holds all locations in onservable array
     self.locationsAll = ko.observableArray([]);
     self.selectedLocation = ko.observable(null);
-    //self.previousLocation = self.selectedLocation();
-    //var selectedLocation = model.selectedLocation;
 
     //populate locationsAll array with initialLocations
     model.initialLocations.forEach(function(location) {
-        //console.log(locationsAll());
         self.locationsAll.push(new Locations(location));
     });
 

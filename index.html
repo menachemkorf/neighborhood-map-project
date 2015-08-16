@@ -26,16 +26,16 @@
             <div class="right-panel" id="right-nav">
                 <ul class="nav nav-stacked">
                     <li>
-                        <form class="navbar-form" role="search">
+                        <form data-bind="submit: filter" class="navbar-form" role="search">
                             <div class="form-group search-group">
-                                <input type="text" class="form-control search-input" placeholder="Search">
+                                <input data-bind="value: searchQuery" type="text" class="form-control search-input" placeholder="Search">
                                 <button type="submit" class="btn btn-default search-btn">
                                     <span class="glyphicon glyphicon-search"></span>
                                 </button>
                             </div>
                         </form>
                     </li>
-                    <!-- ko foreach: locationsAll -->
+                    <!-- ko foreach: displayLocations -->
                         <li><a data-bind="text: title, click: $root.setCurrentLocation" href="#"></a></li>
                     <!-- /ko -->
                 </ul>

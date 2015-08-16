@@ -161,12 +161,30 @@ var ViewModel = function() {
     var self = this;
 
     //holds all locations in onservable array
+
+    //all locations in app
     self.locationsAll = ko.observableArray([]);
+
+    //clicked location
     self.selectedLocation = ko.observable(null);
+
+    //search query
+    self.searchQuery = ko.observable("");
+
+    //locations that match search query
+    //self.filteredItems = ko.observableArray([]);
+
+    //locations to display, initially all, after search only what matches
+    self.displayLocations = ko.observableArray([]);
 
     //populate locationsAll array with initialLocations
     model.initialLocations.forEach(function(location) {
         self.locationsAll.push(new Locations(location));
+    });
+
+    //display all locations
+    self.locationsAll().forEach(function(location) {
+        self.displayLocations.push(location);
     });
 
     //add markers to each location
@@ -181,6 +199,21 @@ var ViewModel = function() {
         });
     });
 
+    //when search form submitted, filters through all locations with search query
+    self.filter = function() {
+        var filteredLocations = [];
+        //loop through all locations
+        self.locationsAll().forEach(function(location) {
+            //check which match query
+            if(location.title().indexOf(self.searchQuery()) > -1) {
+                //store matched in array
+                filteredLocations.push(location);
+            }
+        });
+        //display filteredLocations
+        self.displayLocations(filteredLocations);
+    };
+
     //sets selectedLocation when click on list item or marker
     self.setCurrentLocation = function (location) {
         self.previousLocation = self.selectedLocation();
@@ -189,23 +222,18 @@ var ViewModel = function() {
 
     //handle current location when changed
     self.handleCurrentLocation = ko.computed(function() {
-
         //check if selectedLocation was set
         if(self.selectedLocation() !== null) {
-
             //check if selectedLocation was changed
             if (self.selectedLocation() !== self.previousLocation) {
-
                 if (self.previousLocation !== null) {
                     //stop animation from previous marker
                     self.previousLocation.marker.setAnimation(null);
                 }
                 //animate marker on selectedLocation
                 self.selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
-
                 //open infowindow with default html
                 infoWindow.open(map, self.selectedLocation().marker);
-
                 //put ajax request to wikipedia api for selected location info
                 loadWikiAPI(self.selectedLocation().wikiSearch());
             }
@@ -215,29 +243,28 @@ var ViewModel = function() {
 
     //add content to infowindow from wikipedia api
     self.loaded = ko.computed(function(){
-
         //append title to infowindow header
         if(self.selectedLocation() !== null) {
             var str = self.selectedLocation().title();
             $('.name-header').text(str);
         }
-
         //if api not yet loaded
         //append loading message to infoindow
         if (!model.wikiAPI.isLoaded()) {
             $('.wiki-content').html('<p>' + 'loading...' + '</p>');
-
         //if api loaded successfully
         //append parsed response to infowindow
         } else if (model.wikiAPI.isLoaded() === 'success') {
             $('.wiki-content').html('<p>' + model.wikiAPI.description() + '<br>' +
                 '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
                 '</p>');
-
         //if error loding
         //append error message to infowindow
         } else if (model.wikiAPI.isLoaded() === 'error') {
             $('.wiki-content').html('<p>' + 'There was an error loading wikipedia.' + '</p>');
         }
     });
+
+
+
 };

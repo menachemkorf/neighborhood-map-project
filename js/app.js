@@ -44,7 +44,8 @@ function initializeInfoWindow() {
                                 '</div>';
 
     infoWindow = new google.maps.InfoWindow({
-        content: infoWindowContentStr
+        content: infoWindowContentStr,
+        maxWidth: 200
     });
 }
 
@@ -123,12 +124,6 @@ var addMarker = function(data) {
         title: data.title()
     });
 };
-
-/*var customInfoWindowHeader = function(data) {
-    //info window
-    var str = data.title();
-    $('.name-header').text(str);
-};*/
 
 var loadWikiAPI = function(data) {
 
@@ -214,10 +209,17 @@ var ViewModel = function() {
         self.displayLocations(filteredLocations);
     };
 
+    self.liClick = function(location) {
+        self.offCanvas();
+        self.setCurrentLocation(location);
+    };
+
     //sets selectedLocation when click on list item or marker
-    self.setCurrentLocation = function (location) {
+    self.setCurrentLocation = function(location) {
         self.previousLocation = self.selectedLocation();
         self.selectedLocation(location);
+        //if user mobile device hide menu
+        //self.offCanvas();
     };
 
     //handle current location when changed
@@ -237,12 +239,11 @@ var ViewModel = function() {
                 //put ajax request to wikipedia api for selected location info
                 loadWikiAPI(self.selectedLocation().wikiSearch());
             }
-
         }
     });
 
     //add content to infowindow from wikipedia api
-    self.loaded = ko.computed(function(){
+    self.updateInfoWindow = ko.computed(function(){
         //append title to infowindow header
         if(self.selectedLocation() !== null) {
             var str = self.selectedLocation().title();
@@ -265,6 +266,8 @@ var ViewModel = function() {
         }
     });
 
-
-
+    self.offCanvas = function() {
+        $('.right-panel').toggleClass('active');
+        $('.menu-button').toggleClass('menu-button-open');
+    };
 };

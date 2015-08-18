@@ -6,7 +6,6 @@
     <title></title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-
 </head>
 <body>
 <div class="wrap">
@@ -15,7 +14,7 @@
     <div id="map-canvas"></div>
 
     <!-- arrow button on moblie devices to reveal menu -->
-    <div class="menu-button visible-xs">
+    <div data-bind="click: offCanvas" class="menu-button visible-xs">
         <span class="glyphicon glyphicon-menu-left"></span>
     </div>
 
@@ -36,7 +35,7 @@
                         </form>
                     </li>
                     <!-- ko foreach: displayLocations -->
-                        <li><a data-bind="text: title, click: $root.setCurrentLocation" href="#"></a></li>
+                        <li><a data-bind="text: title, click: $root.liClick" href="#"></a></li>
                     <!-- /ko -->
                 </ul>
             </div>
@@ -46,7 +45,6 @@
     <script src="js/libs/jquery.min.js"></script>
     <script src="js/libs/bootstrap.min.js"></script>
     <script src="js/libs/knockout-3.3.0.js"></script>
-    <script src="js/offcanvas.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

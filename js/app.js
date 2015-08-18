@@ -209,7 +209,9 @@ var ViewModel = function() {
         self.displayLocations(filteredLocations);
     };
 
+    //when click on location in list
     self.liClick = function(location) {
+        //if mobile mode move list offcanvas
         self.offCanvas();
         self.setCurrentLocation(location);
     };
@@ -218,8 +220,6 @@ var ViewModel = function() {
     self.setCurrentLocation = function(location) {
         self.previousLocation = self.selectedLocation();
         self.selectedLocation(location);
-        //if user mobile device hide menu
-        //self.offCanvas();
     };
 
     //handle current location when changed

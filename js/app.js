@@ -166,11 +166,12 @@ var ViewModel = function() {
     //search query
     self.searchQuery = ko.observable("");
 
-    //locations that match search query
-    //self.filteredItems = ko.observableArray([]);
+    //failed search
+    self.errerMessage = ko.observable("no data.");
 
     //locations to display, initially all, after search only what matches
     self.displayLocations = ko.observableArray([]);
+
 
     //populate locationsAll array with initialLocations
     model.initialLocations.forEach(function(location) {
@@ -200,13 +201,19 @@ var ViewModel = function() {
         //loop through all locations
         self.locationsAll().forEach(function(location) {
             //check which match query
-            if(location.title().indexOf(self.searchQuery()) > -1) {
+            if(location.title().toLowerCase().indexOf(self.searchQuery().toLowerCase()) > -1) {
                 //store matched in array
                 filteredLocations.push(location);
             }
         });
         //display filteredLocations
-        self.displayLocations(filteredLocations);
+        if (filteredLocations.length > 0) {
+            //self.errerMessage("no");
+            self.displayLocations(filteredLocations);
+        } else {
+            self.displayLocations([]);
+            self.errerMessage("Nothing matches your search.");
+        }
     };
 
     //when click on location in list

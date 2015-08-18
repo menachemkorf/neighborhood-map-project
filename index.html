@@ -35,8 +35,9 @@
                         </form>
                     </li>
                     <!-- ko foreach: displayLocations -->
-                        <li><a data-bind="text: title, click: $root.liClick" href="#"></a></li>
+                        <li data-bind="if: title"><a data-bind="text: title, click: $root.liClick" href="#"></a></li>
                     <!-- /ko -->
+                    <li data-bind="ifnot: displayLocations().length"><span data-bind="text: errerMessage"></span></li>
                 </ul>
             </div>
         </div>

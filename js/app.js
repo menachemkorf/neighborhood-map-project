@@ -1,5 +1,5 @@
-var map;
-var infoWindow;
+//global variables for access in various functions
+var map, infoWindow;
 
 //load google maps script after window loads
 var loadMapAPI = function() {
@@ -16,7 +16,7 @@ var loadMapAPI = function() {
 function initializeMap () {
 
     //lat lng
-    var myLatlng = new google.maps.LatLng(-37.868775, 145.017224);
+    var myLatlng = new google.maps.LatLng(-37.824137, 144.966985);
 
     //options object sent alonh with request for map
     var mapOptions = {
@@ -25,7 +25,6 @@ function initializeMap () {
     };
 
     //creating the map object
-    //two param: DOM element, options object
     map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
 
@@ -57,35 +56,30 @@ var model = {
     initialLocations : [
         {
             title: 'Melbourne Zoo',
-            address: 'Capital City Trail',
             wikiSearch: 'Melbourne%20Zoo',
             lat: -37.780870,
             lng: 144.951499
         },
         {
             title: 'Sea Life Melbourne Aquarium',
-            address: 'Melbourne VIC',
             wikiSearch: 'Sea%20Life%20Melbourne%20Aquarium',
             lat: -37.820894,
             lng: 144.958240
         },
         {
             title: 'Melbourne Royal Botanic Gardens',
-            address: 'South Yarra VIC 3141',
             wikiSearch: 'Royal%20Botanic%20Gardens,%20Melbourne',
             lat: -37.829695,
             lng: 144.982472
         },
         {
             title: 'Melbourne Luna Park',
-            address: '14 Lower Esplanade St Kilda VIC 3182',
             wikiSearch: 'Luna%20Park,%20Melbourne',
             lat: -37.867404,
             lng: 144.976872
         },
         {
             title: 'Melbourne Museum',
-            address: 'Carlton VIC',
             wikiSearch: 'Melbourne%20Museum',
             lat: -37.803421,
             lng: 144.972905

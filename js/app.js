@@ -177,8 +177,14 @@ var ViewModel = function() {
         self.displayLocations.push(location);
     });
 
+    //console.log(self.displayLocations().marker);
     //add markers to each location
-    self.locationsAll().forEach(function(location) {
+    /*self.locationsAll().forEach(function(location) {
+        addMarker(location);
+    });*/
+
+    //add markers to each location
+    self.displayLocations().forEach(function(location) {
         addMarker(location);
     });
 
@@ -200,10 +206,17 @@ var ViewModel = function() {
                 filteredLocations.push(location);
             }
         });
+        //hide all markers
+        self.displayLocations().forEach(function(location){
+            location.marker.setMap(null);
+        });
         //display filteredLocations
         if (filteredLocations.length > 0) {
-            //self.errerMessage("no");
             self.displayLocations(filteredLocations);
+            //show marker for specified locations
+            self.displayLocations().forEach(function(location){
+                location.marker.setMap(map);
+            });
         } else {
             self.displayLocations([]);
             self.errerMessage("Nothing matches your search.");
@@ -237,7 +250,7 @@ var ViewModel = function() {
                 self.selectedLocation().marker.setAnimation(google.maps.Animation.BOUNCE);
                 //open infowindow with default html
                 infoWindow.open(map, self.selectedLocation().marker);
-                //put ajax request to wikipedia api for selected location info
+                //place ajax request to wikipedia api for selected location info
                 loadWikiAPI(self.selectedLocation().wikiSearch());
             }
         }
@@ -250,18 +263,15 @@ var ViewModel = function() {
             var str = self.selectedLocation().title();
             $('.name-header').text(str);
         }
-        //if api not yet loaded
-        //append loading message to infoindow
+        //if api not yet loaded, append loading message to infoindow
         if (!model.wikiAPI.isLoaded()) {
             $('.wiki-content').html('<p>' + 'loading...' + '</p>');
-        //if api loaded successfully
-        //append parsed response to infowindow
+        //if api loaded successfully, append parsed response to infowindow
         } else if (model.wikiAPI.isLoaded() === 'success') {
             $('.wiki-content').html('<p>' + model.wikiAPI.description() + '<br>' +
                 '<a href="' + model.wikiAPI.link() + '">Read more</a>' +
                 '</p>');
-        //if error loding
-        //append error message to infowindow
+        //if error loding, append error message to infowindow
         } else if (model.wikiAPI.isLoaded() === 'error') {
             $('.wiki-content').html('<p>' + 'There was an error loading wikipedia.' + '</p>');
         }

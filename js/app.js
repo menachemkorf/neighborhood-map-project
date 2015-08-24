@@ -151,7 +151,7 @@ var ViewModel = function() {
     //holds all locations in onservable array
 
     //all locations in app
-    self.locationsAll = ko.observableArray([]);
+    self.locationsAll = ko.observableArray();
 
     //clicked location
     self.selectedLocation = ko.observable(null);
@@ -163,7 +163,7 @@ var ViewModel = function() {
     self.errerMessage = ko.observable("no data.");
 
     //locations to display, initially all, after search only what matches
-    self.displayLocations = ko.observableArray([]);
+    self.displayLocations = ko.observableArray();
 
 
     //populate locationsAll array with initialLocations

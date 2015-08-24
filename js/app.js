@@ -4,7 +4,6 @@ var map, infoWindow;
 //load google maps script after window loads
 var loadMapAPI = function() {
     var script = document.createElement('script');
-    script.type = 'text/javascript';
     script.src = 'https://maps.googleapis.com/maps/api/js?callback=initializeMap';
     script.onerror = function(event){
         document.write("Sorry, we can't load google maps, please try again later.");
@@ -176,12 +175,6 @@ var ViewModel = function() {
     self.locationsAll().forEach(function(location) {
         self.displayLocations.push(location);
     });
-
-    //console.log(self.displayLocations().marker);
-    //add markers to each location
-    /*self.locationsAll().forEach(function(location) {
-        addMarker(location);
-    });*/
 
     //add markers to each location
     self.displayLocations().forEach(function(location) {
